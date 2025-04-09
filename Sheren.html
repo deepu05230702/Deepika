@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheren's Portfolio</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --primary: #4158D0;
+            --secondary: #C850C0;
+            --accent: #FFCC70;
+            --dark: #121212;
+            --light: #ffffff;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--light);
+            background-color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            text-align: center;
+        }
+        
+        .nav-container {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background-color: rgba(18, 18, 18, 0.8);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-title {
+            font-size: 4.5rem;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        
+        .contact-info {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            margin-top: 2rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        section {
+            padding: 6rem 0;
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+        }
+        
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+        
+        .skill-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .skill {
+            position: relative;
+        }
+        
+        .skill-name {
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .skill-progress {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .skill-progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            width: 0;
+        }
+        
+        .list-item {
+            padding: 0.8rem 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .list-item i {
+            margin-right: 1rem;
+            color: var(--accent);
+        }
+        
+        .timeline {
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+        
+        .timeline-item {
+            width: 100%;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            padding-right: calc(50% + 2rem);
+        }
+        
+        .timeline-item:nth-child(even) {
+            padding-left: calc(50% + 2rem);
+        }
+        
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            transform: translateX(-50px);
+        }
+        
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content::before {
+            right: -30px;
+            transform: translateY(-50%);
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content::before {
+            left: -30px;
+            transform: translateY(-50%);
+        }
+        
+        .timeline-date {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .timeline-title {
+            margin-bottom: 1rem;
+        }
+        
+        footer {
+            background: rgba(18, 18, 18, 0.9);
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .social-link {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            transform: translateY(-5px);
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: var(--light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 100;
+        }
+        
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .timeline::before {
+                left: 20px;
+            }
+            
+            .timeline-item:nth-child(odd),
+            .timeline-item:nth-child(even) {
+                padding: 0 0 0 60px;
+            }
+            
+            .timeline-item:nth-child(odd) .timeline-content::before,
+            .timeline-item:nth-child(even) .timeline-content::before {
+                left: -30px;
+                transform: translateY(-50%);
+            }
+            
+            .timeline-item:nth-child(odd) .timeline-content,
+            .timeline-item:nth-child(even) .timeline-content {
+                transform: translateX(30px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div class="nav-container">
+        <nav>
+            <div class="logo">Sheren S.</div>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#education">Education</a>
+                <a href="#skills">Skills</a>
+                <a href="#certifications">Certifications</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </nav>
+    </div>
+    
+    <header>
+        <div class="hero-content">
+            <h1 class="hero-title">Sheren S</h1>
+            <p class="hero-subtitle">Software Developer & BCA Student</p>
+            <p class="contact-info">Email: sheren3601@gmail.com | Mobile: 9741197130</p>
+            <a href="#contact" class="cta-button">Get In Touch</a>
+        </div>
+    </header>
+    
+    <main class="container">
+        <section id="about">
+            <h2 class="section-title">Career Objectives</h2>
+            <div class="card-container">
+                <div class="card">
+                    <p>Aiming to contribute to organizational success while gaining practical experience and enhancing my expertise in software development and IT solutions.</p>
+                    <p>Motivated and enthusiastic to apply academic knowledge and technical skills in a professional environment through an internship opportunity.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="education">
+            <h2 class="section-title">Education</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Current</div>
+                        <h3 class="timeline-title">Bachelor of Computer Applications (BCA)</h3>
+                        <p>Bishop Cotton Academy of Professional Management, Bengaluru City University</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">2022</div>
+                        <h3 class="timeline-title">Pre-University</h3>
+                        <p>BEL Composite PU College, Dept. of Pre-University College</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">2020</div>
+                        <h3 class="timeline-title">SSLC</h3>
+                        <p>BEL High School, Karnataka Secondary Education Examination Board</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="skills">
+            <h2 class="section-title">Technical Skills</h2>
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">Programming</h3>
+                    <div class="skill-bars">
+                        <div class="skill">
+                            <div class="skill-name">
+                                <span>C</span>
+                                <span class="skill-percentage">85%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="85"></div>
+                            </div>
+                        </div>
+                        <div class="skill">
+                            <div class="skill-name">
+                                <span>C++</span>
+                                <span class="skill-percentage">80%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="80"></div>
+                            </div>
+                        </div>
+                        <div class="skill">
+                            <div class="skill-name">
+                                <span>Python</span>
+                                <span class="skill-percentage">75%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="75"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 class="card-title">Web Development</h3>
+                    <div class="skill-bars">
+                        <div class="skill">
+                            <div class="skill-name">
+                                <span>HTML</span>
+                                <span class="skill-percentage">90%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="90"></div>
+                            </div>
+                        </div>
+                        <div class="skill">
+                            <div class="skill-name">
+                                <span>CSS</span>
+                                <span class="skill-percentage">85%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="85"></div>
+                            </div>
+                        </div>
+                        <div class="skill">
+                            <div class="skill-name">
+                                <span>PHP</span>
+                                <span class="skill-percentage">70%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="70"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 class="card-title">Database Management</h3>
+                    <div class="skill-bars">
+                        <div class="skill">
+                            <div class="skill-name">
+                                <span>MySQL</span>
+                                <span class="skill-percentage">80%</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-progress-bar" data-width="80"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="soft-skills">
+            <h2 class="section-title">Soft Skills</h2>
+            <div class="card-container">
+                <div class="card">
+                    <ul>
+                        <li class="list-item"><i class="fas fa-lightbulb"></i> Creativity and Innovation</li>
+                        <li class="list-item"><i class="fas fa-comments"></i> Communication & Teamwork</li>
+                        <li class="list-item"><i class="fas fa-puzzle-piece"></i> Problem-Solving & Debugging</li>
+                        <li class="list-item"><i class="fas fa-clock"></i> Time Management</li>
+                        <li class="list-item"><i class="fas fa-sync-alt"></i> Adaptability & Continuous Learning</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section id="certifications">
+            <h2 class="section-title">Certifications</h2>
+            <div class="card-container">
+                <div class="card">
+                    <ul>
+                        <li class="list-item"><i class="fas fa-certificate"></i> Data Analytics using Advanced Excel</li>
+                        <li class="list-item"><i class="fas fa-certificate"></i> NCC Certificate (2019)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section id="interests">
+            <h2 class="section-title">Personal Interests</h2>
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">Hobbies</h3>
+                    <ul>
+                        <li class="list-item"><i class="fas fa-music"></i> Singing</li>
+                        <li class="list-item"><i class="fas fa-running"></i> Dancing</li>
+                        <li class="list-item"><i class="fas fa-paint-brush"></i> Craftworks</li>
+                        <li class="list-item"><i class="fas fa-utensils"></i> Cooking</li>
+                        <li class="list-item"><i class="fas fa-pencil-alt"></i> Drawing</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3 class="card-title">Languages</h3>
+                    <ul>
+                        <li class="list-item"><i class="fas fa-globe"></i> English</li>
+                        <li class="list-item"><i class="fas fa-globe"></i> Kannada</li>
+                        <li class="list-item"><i class="fas fa-globe"></i> Tamil</li>
+                        <li class="list-item"><i class="fas fa-globe"></i> Telugu</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section id="contact">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="card-container">
+                <div class="card">
+                    <h3 class="card-title">Contact Information</h3>
+                    <ul>
+                        <li class="list-item"><i class="fas fa-envelope"></i> sheren3601@gmail.com</li>
+                        <li class="list-item"><i class="fas fa-phone"></i> 9741197130</li>
+                        <li class="list-item"><i class="fas fa-map-marker-alt"></i> Bengaluru, Karnataka</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p>&copy; 2025 Sheren S. All Rights Reserved.</p>
+    </footer>
+    
+    <div class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    
+    <script>
+        // Three.js Background Animation
+        const initThreeJS = () => {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+            
+            // Create particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1500;
+            
+            const posArray = new Float32Array(particlesCount * 3);
+            const colorsArray = new Float32Array(particlesCount * 3);
+            
+            for (let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 10;
+                colorsArray[i] = Math.random();
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.005,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+            });
+            
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+            
+            camera.position.z = 3;
+            
+            // Mouse effect
+            let mouseX = 0;
+            let mouseY = 0;
+            
+            function onDocumentMouseMove(event) {
+                mouseX = (event.clientX - window.innerWidth / 2) / 100;
+                mouseY = (event.clientY - window.innerHeight / 2) / 100;
+            }
+            
+            document.addEventListener('mousemove', onDocumentMouseMove);
+            
+            // Animation loop
+            const animate = () => {
+                requestAnimationFrame(animate);
+                
+                particlesMesh.rotation.x += 0.0005;
+                particlesMesh.rotation.y += 0.0005;
+                
+                particlesMesh.rotation.y += mouseX * 0.0005;
+                particlesMesh.rotation.x += mouseY * 0.0005;
+                
+                renderer.render(scene, camera);
+            };
+            
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+        
+        // Initialize Three.js after page load
+        window.addEventListener('load', initThreeJS);
+        
+        // Animations using GSAP
+        window.addEventListener('DOMContentLoaded', () => {
+            // Hero animations
+            gsap.to('.hero-title', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.2
+            });
+            
+            gsap.to('.hero-subtitle', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.4
+            });
+            
+            gsap.to('.contact-info', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.6
+            });
+            
+            gsap.to('.cta-button', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.8
+            });
+            
+            // Scroll animations
+            const cards = document.querySelectorAll('.card');
+            const timelineItems = document.querySelectorAll('.timeline-content');
+            
+            // Animate skill bars
+            function animateSkillBars() {
+                const skillBars = document.querySelectorAll('.skill-progress-bar');
+                
+                skillBars.forEach(bar => {
+                    const width = bar.getAttribute('data-width');
+                    gsap.to(bar, {
+                        width: width + '%',
+                        duration: 1.5,
+                        ease: 'power3.out'
+                    });
+                });
+            }
+            
+            // Intersection Observer for scroll animations
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (entry.target.classList.contains('card')) {
+                            gsap.to(entry.target, {
+                                opacity: 1,
+                                y: 0,
+                                duration: 0.8,
+                                ease: 'power3.out'
+                            });
+                            
+                            // If card contains skill bars, animate them
+                            if (entry.target.querySelector('.skill-progress-bar')) {
+                                animateSkillBars();
+                            }
+                        } else if (entry.target.classList.contains('timeline-content')) {
+                            gsap.to(entry.target, {
+                                opacity: 1,
+                                x: 0,
+                                duration: 0.8,
+                                ease: 'power3.out'
+                            });
+                        }
+                        
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            // Observe elements
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+            
+            timelineItems.forEach(item => {
+                observer.observe(item);
+            });
+            
+            // Back to top button
+            const backToTopButton = document.querySelector('.back-to-top');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 500) {
+                    backToTopButton.classList.add('show');
+                } else {
+                    backToTopButton.classList.remove('show');
+                }
+            });
+            
+            backToTopButton.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
